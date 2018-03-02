@@ -3,7 +3,7 @@
 #include <fstream>
 #include <vector>
 using namespace std;
-//класс точка
+//РєР»Р°СЃСЃ С‚РѕС‡РєР°
 class Point {
 private:
 	int x, y;
@@ -28,7 +28,7 @@ public:
 	void add_Y(int y) {
 		this->y = y;
 	}
-	//совпадение точек
+	//СЃРѕРІРїР°РґРµРЅРёРµ С‚РѕС‡РµРє
 	bool overlap(int x, int y) {
 		return (this->x == x && this->y == y) ? true : false;
 	}
@@ -36,26 +36,26 @@ public:
 	void Display() {
 		cout << "(" << x << ", " << y << ")\n";
 	}
-	//длина вектора
+	//РґР»РёРЅР° РІРµРєС‚РѕСЂР°
 	int Length(Point A) {
 		return (A.get_X() - x)*(A.get_X() - x) + (A.get_Y() - y)*(A.get_Y() - y);
 	}
 };
-//площадь треугольника
+//РїР»РѕС‰Р°РґСЊ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 int TriangleSquare(Point A, Point B, Point C) {
 	return abs(((A.get_X() - C.get_X())*(B.get_Y() - C.get_Y()) - (A.get_Y() - C.get_Y())*(B.get_X() - C.get_X())));
 }
-//класс квадрат
+//РєР»Р°СЃСЃ РєРІР°РґСЂР°С‚
 class Square {
 private:
 	Point A, B, C, D;
 	Point withA1, withA2, notWithA;
 public:
-	//площадь квадрата
+	//РїР»РѕС‰Р°РґСЊ РєРІР°РґСЂР°С‚Р°
 	int Sq() {
 		return A.Length(withA2);
 	}
-	//проверка является ли квадратом
+	//РїСЂРѕРІРµСЂРєР° СЏРІР»СЏРµС‚СЃСЏ Р»Рё РєРІР°РґСЂР°С‚РѕРј
 	bool IsSquare(Point A, Point B, Point C, Point D) {
 		int lenAB = A.Length(B);
 		int lenAC = A.Length(C);
@@ -83,7 +83,7 @@ public:
 		}
 		return false;
 	}
-	//инициализация с проверкой
+	//РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃ РїСЂРѕРІРµСЂРєРѕР№
 	bool Init(Point A, Point B, Point C, Point D) {
 		if (IsSquare(A, B, C, D)) {
 			this->A = A;
@@ -94,14 +94,14 @@ public:
 		}
 		return false;
 	}
-	//вывод точек
+	//РІС‹РІРѕРґ С‚РѕС‡РµРє
 	void Display() {
 		A.Display();
 		withA1.Display();
 		notWithA.Display();
 		withA2.Display();
 	}
-	//ввод точек
+	//РІРІРѕРґ С‚РѕС‡РµРє
 	void Enter() {
 		int x, y;
 		cin >> x >> y;
@@ -113,12 +113,12 @@ public:
 		cin >> x >> y;
 		D.Init(x, y);
 	}
-	//проверка попадает ли точка в квадрат
+	//РїСЂРѕРІРµСЂРєР° РїРѕРїР°РґР°РµС‚ Р»Рё С‚РѕС‡РєР° РІ РєРІР°РґСЂР°С‚
 	bool IntoSq(Point K) {
 		int SumSq = TriangleSquare(A, withA1, K) + TriangleSquare(withA1, notWithA, K) + TriangleSquare(notWithA, withA2, K) + TriangleSquare(withA2, A, K);
 		return Sq() == SumSq/2 ? true : false;
 	}
-	//попадают ли точки в квадрат
+	//РїРѕРїР°РґР°СЋС‚ Р»Рё С‚РѕС‡РєРё РІ РєРІР°РґСЂР°С‚
 	bool AllPointsIn(vector<Point> Array, int N) {
 		int c = 0;
 		for (int i = 0; i < N; i++) {
@@ -130,7 +130,7 @@ public:
 		return (c == N) ? true : false;
 	}
 };
-//проверка точки на повтор в векторе
+//РїСЂРѕРІРµСЂРєР° С‚РѕС‡РєРё РЅР° РїРѕРІС‚РѕСЂ РІ РІРµРєС‚РѕСЂРµ
 bool overlapPoints(vector<Point> &Array, int X, int Y, int &N) {
 	for (int j = 0; j < N; j++) {
 		if (Array[j].overlap(X, Y)) {
@@ -140,7 +140,7 @@ bool overlapPoints(vector<Point> &Array, int X, int Y, int &N) {
 	}
 	return false;
 }
-//проверка является ли количество точек верным
+//РїСЂРѕРІРµСЂРєР° СЏРІР»СЏРµС‚СЃСЏ Р»Рё РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РІРµСЂРЅС‹Рј
 bool CorrectSizeFile(string Name, int N, int &size) {
 	ifstream in(Name + ".txt");
 	int k = 0;
@@ -153,23 +153,23 @@ bool CorrectSizeFile(string Name, int N, int &size) {
 	return size < N;
 	in.close();
 }
-//чтение из файла
+//С‡С‚РµРЅРёРµ РёР· С„Р°Р№Р»Р°
 bool scanFile(vector<Point> &Array, string Name, int &N) {
 	ifstream in(Name + ".txt");
 	if (!in)
 	{
-		cout << "Файл не существует!Проверьте лежит ли он в папке с программой!" << endl;
+		cout << "Р¤Р°Р№Р» РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚!РџСЂРѕРІРµСЂСЊС‚Рµ Р»РµР¶РёС‚ Р»Рё РѕРЅ РІ РїР°РїРєРµ СЃ РїСЂРѕРіСЂР°РјРјРѕР№!" << endl;
 		return false;
 	}
 	if (in.peek() == EOF) {
-		cout << "Файл пуст!Заполните файл точками!" << endl;
+		cout << "Р¤Р°Р№Р» РїСѓСЃС‚!Р—Р°РїРѕР»РЅРёС‚Рµ С„Р°Р№Р» С‚РѕС‡РєР°РјРё!" << endl;
 		return false;
 	}
 	int sizeTrue;
 	int size = N;
 	while (CorrectSizeFile(Name, N, sizeTrue)) {
-		cout << "Вы ввели количество точек больше чем есть в файле!" << endl;
-		cout << "Ввести количество точек заново или уменьшить количество точек до предела?" << endl;
+		cout << "Р’С‹ РІРІРµР»Рё РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє Р±РѕР»СЊС€Рµ С‡РµРј РµСЃС‚СЊ РІ С„Р°Р№Р»Рµ!" << endl;
+		cout << "Р’РІРµСЃС‚Рё РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє Р·Р°РЅРѕРІРѕ РёР»Рё СѓРјРµРЅСЊС€РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РґРѕ РїСЂРµРґРµР»Р°?" << endl;
 
 		int i = 0;
 		while (i != 1 && i != 2) {
@@ -178,7 +178,7 @@ bool scanFile(vector<Point> &Array, string Name, int &N) {
 		}
 
 		if (i == 1) {
-			cout << "Введите количество точек: ";
+			cout << "Р’РІРµРґРёС‚Рµ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє: ";
 			cin >> N;
 		}
 		else {
@@ -202,13 +202,13 @@ bool scanFile(vector<Point> &Array, string Name, int &N) {
 		}
 	}
 	if (N != size) {
-		cout << "Одинаковых точек удалено: " << c << endl;
-		cout << "Всего точек: " << N << endl;
+		cout << "РћРґРёРЅР°РєРѕРІС‹С… С‚РѕС‡РµРє СѓРґР°Р»РµРЅРѕ: " << c << endl;
+		cout << "Р’СЃРµРіРѕ С‚РѕС‡РµРє: " << N << endl;
 	}
 	in.close();
 	return true;
 }
-//вывод точек
+//РІС‹РІРѕРґ С‚РѕС‡РµРє
 void Display(vector<Point> &Array, int N) {
 	for (int i = 0; i < N; i++) {
 		Array[i].Display();
@@ -218,12 +218,12 @@ void Display(vector<Point> &Array, int N) {
 int main() {
 	setlocale(LC_ALL, "Russian");
 	int N;
-	//ввод количества точек первого множества
+	//РІРІРѕРґ РєРѕР»РёС‡РµСЃС‚РІР° С‚РѕС‡РµРє РїРµСЂРІРѕРіРѕ РјРЅРѕР¶РµСЃС‚РІР°
 	do {
-		std::cout << "Введите количество точек первого множества:";
+		std::cout << "Р’РІРµРґРёС‚Рµ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РїРµСЂРІРѕРіРѕ РјРЅРѕР¶РµСЃС‚РІР°:";
 		cin >> N;
 		if (N < 4) {
-			cout << "Квадрат должен иметь как минимум 4 точки!" << endl;
+			cout << "РљРІР°РґСЂР°С‚ РґРѕР»Р¶РµРЅ РёРјРµС‚СЊ РєР°Рє РјРёРЅРёРјСѓРј 4 С‚РѕС‡РєРё!" << endl;
 		}
 	} while (N < 4);
 	std::vector<Point> FirstArray(N);
@@ -231,19 +231,19 @@ int main() {
 		return 0;
 	}
 	else if (N < 4) {
-		cout << "Недостаточное количество точек для создания квадрата!" << endl;
+		cout << "РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РєРІР°РґСЂР°С‚Р°!" << endl;
 		return 0;
 	}
 	else {
 		Display(FirstArray, N);
 	}
 	int SecondPoints;
-	//ввод количества точек второго множества
+	//РІРІРѕРґ РєРѕР»РёС‡РµСЃС‚РІР° С‚РѕС‡РµРє РІС‚РѕСЂРѕРіРѕ РјРЅРѕР¶РµСЃС‚РІР°
 	do {
-		cout << "Введите количество точек второго множества:";
+		cout << "Р’РІРµРґРёС‚Рµ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РІС‚РѕСЂРѕРіРѕ РјРЅРѕР¶РµСЃС‚РІР°:";
 		cin >> SecondPoints;
 		if (SecondPoints < 1) {
-			cout << "Количество точек должно быть натуральным числом!" << endl;
+			cout << "РљРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РЅР°С‚СѓСЂР°Р»СЊРЅС‹Рј С‡РёСЃР»РѕРј!" << endl;
 		}
 	} while (SecondPoints < 1);
 	std::vector<Point> SecondArray(SecondPoints);
@@ -254,7 +254,7 @@ int main() {
 	Square check, right;
 	float S = 0;
 	float Smin = 999999;
-	//главный цикл перебора 4х точек нахождения квадрата с мин площадью,где все точки входят в него
+	//РіР»Р°РІРЅС‹Р№ С†РёРєР» РїРµСЂРµР±РѕСЂР° 4С… С‚РѕС‡РµРє РЅР°С…РѕР¶РґРµРЅРёСЏ РєРІР°РґСЂР°С‚Р° СЃ РјРёРЅ РїР»РѕС‰Р°РґСЊСЋ,РіРґРµ РІСЃРµ С‚РѕС‡РєРё РІС…РѕРґСЏС‚ РІ РЅРµРіРѕ
 	for (int i = 0; i < N - 3; i++) {
 		for (int j = i + 1; j < N - 2; j++) {
 			for (int k = j + 1; k < N - 1; k++) {
@@ -273,18 +273,18 @@ int main() {
 			}
 		}
 	}
-	//вывод результатов
+	//РІС‹РІРѕРґ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
 	if (S == 0) {
-		cout << "Квадрата не существует!" << endl;
+		cout << "РљРІР°РґСЂР°С‚Р° РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚!" << endl;
 	}
 	else if (999999 != Smin) {
-		cout << "Точки второго множества входят в квадрат!" << endl;
-		cout << "Минимальная площадь: " << Smin << endl;
-		cout << "Координаты квадрата: " << endl;
+		cout << "РўРѕС‡РєРё РІС‚РѕСЂРѕРіРѕ РјРЅРѕР¶РµСЃС‚РІР° РІС…РѕРґСЏС‚ РІ РєРІР°РґСЂР°С‚!" << endl;
+		cout << "РњРёРЅРёРјР°Р»СЊРЅР°СЏ РїР»РѕС‰Р°РґСЊ: " << Smin << endl;
+		cout << "РљРѕРѕСЂРґРёРЅР°С‚С‹ РєРІР°РґСЂР°С‚Р°: " << endl;
 		right.Display();
 	}
 	else {
-		cout << "Точки второго множества не входят в квадрат!" << endl;
+		cout << "РўРѕС‡РєРё РІС‚РѕСЂРѕРіРѕ РјРЅРѕР¶РµСЃС‚РІР° РЅРµ РІС…РѕРґСЏС‚ РІ РєРІР°РґСЂР°С‚!" << endl;
 	}
 	system("PAUSE");
 	return 0;
