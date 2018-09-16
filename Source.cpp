@@ -2,8 +2,10 @@
 #include <cmath>
 #include <fstream>
 #include <vector>
+#include <windows.h>
+#include <ctime>
 using namespace std;
-//РєР»Р°СЃСЃ С‚РѕС‡РєР°
+//класс точка
 class Point {
 private:
 	int x, y;
@@ -28,38 +30,47 @@ public:
 	void add_Y(int y) {
 		this->y = y;
 	}
-	//СЃРѕРІРїР°РґРµРЅРёРµ С‚РѕС‡РµРє
 	bool overlap(int x, int y) {
 		return (this->x == x && this->y == y) ? true : false;
 	}
-
 	void Display() {
 		cout << "(" << x << ", " << y << ")\n";
 	}
-	//РґР»РёРЅР° РІРµРєС‚РѕСЂР°
-	int Length(Point A) {
-		return (A.get_X() - x)*(A.get_X() - x) + (A.get_Y() - y)*(A.get_Y() - y);
+	float Length(Point A) {
+		return sqrt((A.get_X() - x)*(A.get_X() - x) + (A.get_Y() - y)*(A.get_Y() - y));
 	}
 };
-//РїР»РѕС‰Р°РґСЊ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
-int TriangleSquare(Point A, Point B, Point C) {
-	return abs(((A.get_X() - C.get_X())*(B.get_Y() - C.get_Y()) - (A.get_Y() - C.get_Y())*(B.get_X() - C.get_X())));
+//площадь треугольника
+float TriangleSquare(Point A, Point B, Point C) {
+	return fabs(0.5*((A.get_X() - C.get_X())*(B.get_Y() - C.get_Y()) - (A.get_Y() - C.get_Y())*(B.get_X() - C.get_X())));
 }
-//РєР»Р°СЃСЃ РєРІР°РґСЂР°С‚
+//класс квадрат
 class Square {
 private:
 	Point A, B, C, D;
-	Point withA1, withA2, notWithA;
 public:
-	//РїР»РѕС‰Р°РґСЊ РєРІР°РґСЂР°С‚Р°
-	int Sq() {
-		return A.Length(withA2);
+
+    Point get_A() {
+		return this->A;
 	}
-	//РїСЂРѕРІРµСЂРєР° СЏРІР»СЏРµС‚СЃСЏ Р»Рё РєРІР°РґСЂР°С‚РѕРј
-	bool IsSquare(Point A, Point B, Point C, Point D) {
-		int lenAB = A.Length(B);
-		int lenAC = A.Length(C);
-		int lenAD = A.Length(D);
+    Point get_B() {
+		return this->B;
+	}
+	Point get_C() {
+		return this->C;
+	}
+	Point get_D() {
+		return this->D;
+	}
+
+	float Sq() {
+		return A.Length(B)*A.Length(B);
+	}
+	bool Init(Point A, Point B, Point C, Point D) {
+		Point withA1, withA2, notWithA;
+		float lenAB = A.Length(B);
+		float lenAC = A.Length(C);
+		float lenAD = A.Length(D);
 		if (lenAB == lenAC) {
 			withA1 = B;
 			withA2 = C;
@@ -79,29 +90,22 @@ public:
 			return false;
 
 		if (A.Length(withA1) == A.Length(withA2) && withA1.Length(notWithA) == A.Length(withA1) && notWithA.Length(withA2) == A.Length(withA2)) {
-			return (TriangleSquare(A, withA1, withA2) != 0 && A.Length(notWithA) == withA1.Length(withA2)) ? true : false;
-		}
-		return false;
-	}
-	//РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃ РїСЂРѕРІРµСЂРєРѕР№
-	bool Init(Point A, Point B, Point C, Point D) {
-		if (IsSquare(A, B, C, D)) {
 			this->A = A;
-			this->B = B;
-			this->C = C;
-			this->D = D;
-			return true;
+			this->B = withA1;
+			this->C = notWithA;
+			this->D = withA2;
+			return (A.Length(notWithA) == withA1.Length(withA2) && TriangleSquare(A, withA1, withA2)*2 != 0)? true : false;
 		}
 		return false;
 	}
-	//РІС‹РІРѕРґ С‚РѕС‡РµРє
+
 	void Display() {
 		A.Display();
-		withA1.Display();
-		notWithA.Display();
-		withA2.Display();
+		B.Display();
+		C.Display();
+		D.Display();
 	}
-	//РІРІРѕРґ С‚РѕС‡РµРє
+
 	void Enter() {
 		int x, y;
 		cin >> x >> y;
@@ -113,36 +117,49 @@ public:
 		cin >> x >> y;
 		D.Init(x, y);
 	}
-	//РїСЂРѕРІРµСЂРєР° РїРѕРїР°РґР°РµС‚ Р»Рё С‚РѕС‡РєР° РІ РєРІР°РґСЂР°С‚
-	bool IntoSq(Point K) {
-		int SumSq = TriangleSquare(A, withA1, K) + TriangleSquare(withA1, notWithA, K) + TriangleSquare(notWithA, withA2, K) + TriangleSquare(withA2, A, K);
-		return Sq() == SumSq/2 ? true : false;
+};
+    //проверка попадает ли точка в квадрат
+	bool IntoSq(Square sq, Point K) {
+		float SumSq = TriangleSquare(sq.get_A(), sq.get_B(), K) + TriangleSquare(sq.get_B(), sq.get_C(), K) + TriangleSquare(sq.get_C(), sq.get_D(), K) + TriangleSquare(sq.get_D(), sq.get_A(), K);
+		return (fabs(sq.Sq() - SumSq) < 0.0000001) ? true : false;
 	}
-	//РїРѕРїР°РґР°СЋС‚ Р»Рё С‚РѕС‡РєРё РІ РєРІР°РґСЂР°С‚
-	bool AllPointsIn(vector<Point> Array, int N) {
+//попадают ли точки в квадрат
+	bool AllPointsIn(Square sq, vector<Point> Array, int N) {
 		int c = 0;
 		for (int i = 0; i < N; i++) {
-			if (IntoSq(Array[i])) {
+			if (IntoSq(sq,Array[i])) {
 				;
 				c++;
 			}
 		}
 		return (c == N) ? true : false;
 	}
-};
-//РїСЂРѕРІРµСЂРєР° С‚РѕС‡РєРё РЅР° РїРѕРІС‚РѕСЂ РІ РІРµРєС‚РѕСЂРµ
-bool overlapPoints(vector<Point> &Array, int X, int Y, int &N) {
+
+//проверка точки на повтор в векторе
+bool overlapPoints(vector<Point> &Array,int X,int Y, int &N) {
 	for (int j = 0; j < N; j++) {
-		if (Array[j].overlap(X, Y)) {
-			N--;
-			return true;
+			if (Array[j].overlap(X,Y)){
+				N--;
+				return true;
+			}
 		}
-	}
 	return false;
 }
-//РїСЂРѕРІРµСЂРєР° СЏРІР»СЏРµС‚СЃСЏ Р»Рё РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РІРµСЂРЅС‹Рј
-bool CorrectSizeFile(string Name, int N, int &size) {
-	ifstream in(Name + ".txt");
+
+void FillFile(char Name[], int N){
+    ofstream on(Name);
+    for(int i = 0; i < N; i++){
+        on << -100 + rand()%200;
+        on << " ";
+        on << -100 + rand()%200;
+        on << " ";
+    }
+    on.close();
+}
+
+//проверка является ли количество точек верным
+bool CorrectSizeFile(char Name[], int N,int &size) {
+	ifstream in(Name);
 	int k = 0;
 	int i;
 	while (in >> i)
@@ -153,23 +170,23 @@ bool CorrectSizeFile(string Name, int N, int &size) {
 	return size < N;
 	in.close();
 }
-//С‡С‚РµРЅРёРµ РёР· С„Р°Р№Р»Р°
-bool scanFile(vector<Point> &Array, string Name, int &N) {
-	ifstream in(Name + ".txt");
+//чтение из файла
+bool scanFile(vector<Point> &Array,char Name[],int &N) {
+	ifstream in(Name);
 	if (!in)
 	{
-		cout << "Р¤Р°Р№Р» РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚!РџСЂРѕРІРµСЂСЊС‚Рµ Р»РµР¶РёС‚ Р»Рё РѕРЅ РІ РїР°РїРєРµ СЃ РїСЂРѕРіСЂР°РјРјРѕР№!" << endl;
+		cout << "Файл не существует!Проверьте лежит ли он в папке с программой!" << endl;
 		return false;
 	}
 	if (in.peek() == EOF) {
-		cout << "Р¤Р°Р№Р» РїСѓСЃС‚!Р—Р°РїРѕР»РЅРёС‚Рµ С„Р°Р№Р» С‚РѕС‡РєР°РјРё!" << endl;
+		cout << "Файл пуст!Заполните файл точками!" << endl;
 		return false;
 	}
 	int sizeTrue;
 	int size = N;
-	while (CorrectSizeFile(Name, N, sizeTrue)) {
-		cout << "Р’С‹ РІРІРµР»Рё РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє Р±РѕР»СЊС€Рµ С‡РµРј РµСЃС‚СЊ РІ С„Р°Р№Р»Рµ!" << endl;
-		cout << "Р’РІРµСЃС‚Рё РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє Р·Р°РЅРѕРІРѕ РёР»Рё СѓРјРµРЅСЊС€РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РґРѕ РїСЂРµРґРµР»Р°?" << endl;
+	while (CorrectSizeFile(Name, N,sizeTrue)) {
+		cout << "Вы ввели количество точек больше чем есть в файле!" << endl;
+		cout << "Ввести количество точек заново или уменьшить количество точек до предела?" << endl;
 
 		int i = 0;
 		while (i != 1 && i != 2) {
@@ -178,7 +195,7 @@ bool scanFile(vector<Point> &Array, string Name, int &N) {
 		}
 
 		if (i == 1) {
-			cout << "Р’РІРµРґРёС‚Рµ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє: ";
+			cout << "Введите количество точек: ";
 			cin >> N;
 		}
 		else {
@@ -187,7 +204,7 @@ bool scanFile(vector<Point> &Array, string Name, int &N) {
 	}
 
 	int c = 0;
-	int bufferX, bufferY;
+	int bufferX,bufferY;
 	for (int i = 0; i < N; i++) {
 		in >> bufferX;
 		in >> bufferY;
@@ -197,64 +214,65 @@ bool scanFile(vector<Point> &Array, string Name, int &N) {
 
 		}
 		else {
-			N--;
-			c++;
+		N--;
+		c++;
 		}
 	}
 	if (N != size) {
-		cout << "РћРґРёРЅР°РєРѕРІС‹С… С‚РѕС‡РµРє СѓРґР°Р»РµРЅРѕ: " << c << endl;
-		cout << "Р’СЃРµРіРѕ С‚РѕС‡РµРє: " << N << endl;
+		cout << "Одинаковых точек удалено: " << c << endl;
+		cout << "Всего точек: " << N << endl;
 	}
 	in.close();
 	return true;
 }
-//РІС‹РІРѕРґ С‚РѕС‡РµРє
-void Display(vector<Point> &Array, int N) {
+//вывод точек
+void Display(vector<Point> &Array,int N) {
 	for (int i = 0; i < N; i++) {
 		Array[i].Display();
 	}
 }
 
 int main() {
-	setlocale(LC_ALL, "Russian");
+    srand(time(0));
+  //  FillFile("First.txt",1000);
+  //  FillFile("Second.txt",1000);
+	setlocale(LC_ALL, "RUS");
+	cout << "Автор работы Молодожонов В.В. ДИПРБ11.\n";
+	cout << "Даны множества точек на плоскости.Выбрать четыре различные точки первого множества так,\nчтобы квадрат с вершинами в этих точках накрывал все точки\nвторого множества и имел мин. площадь.\n";
+	cout << "N <= 100! Два файла с точками должны лежать в папке с программой!\n";
+
+	while(true){
 	int N;
-	//РІРІРѕРґ РєРѕР»РёС‡РµСЃС‚РІР° С‚РѕС‡РµРє РїРµСЂРІРѕРіРѕ РјРЅРѕР¶РµСЃС‚РІР°
 	do {
-		std::cout << "Р’РІРµРґРёС‚Рµ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РїРµСЂРІРѕРіРѕ РјРЅРѕР¶РµСЃС‚РІР°:";
+		std::cout << "Введите количество точек первого множества:";
 		cin >> N;
 		if (N < 4) {
-			cout << "РљРІР°РґСЂР°С‚ РґРѕР»Р¶РµРЅ РёРјРµС‚СЊ РєР°Рє РјРёРЅРёРјСѓРј 4 С‚РѕС‡РєРё!" << endl;
+			cout << "Квадрат должен иметь как минимум 4 точки!" << endl;
 		}
 	} while (N < 4);
 	std::vector<Point> FirstArray(N);
-	if (!scanFile(FirstArray, "First", N)) {
+	if(!scanFile(FirstArray, "First.txt", N)) {
 		return 0;
 	}
-	else if (N < 4) {
-		cout << "РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РєРІР°РґСЂР°С‚Р°!" << endl;
-		return 0;
-	}
-	else {
-		Display(FirstArray, N);
-	}
+	Display(FirstArray, N);
 	int SecondPoints;
-	//РІРІРѕРґ РєРѕР»РёС‡РµСЃС‚РІР° С‚РѕС‡РµРє РІС‚РѕСЂРѕРіРѕ РјРЅРѕР¶РµСЃС‚РІР°
 	do {
-		cout << "Р’РІРµРґРёС‚Рµ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РІС‚РѕСЂРѕРіРѕ РјРЅРѕР¶РµСЃС‚РІР°:";
+		cout << "Введите количество точек второго множества:";
 		cin >> SecondPoints;
 		if (SecondPoints < 1) {
-			cout << "РљРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РЅР°С‚СѓСЂР°Р»СЊРЅС‹Рј С‡РёСЃР»РѕРј!" << endl;
+			cout << "Количество точек должно быть натуральным числом!" << endl;
 		}
 	} while (SecondPoints < 1);
 	std::vector<Point> SecondArray(SecondPoints);
-	if (!scanFile(SecondArray, "Second", SecondPoints)) {
+	if(!scanFile(SecondArray, "Second.txt", SecondPoints) || N < 4) {
 		return 0;
 	}
 	Display(SecondArray, SecondPoints);
 	Square check, right;
 	float S = 0;
 	float Smin = 999999;
-	//РіР»Р°РІРЅС‹Р№ С†РёРєР» РїРµСЂРµР±РѕСЂР° 4С… С‚РѕС‡РµРє РЅР°С…РѕР¶РґРµРЅРёСЏ РєРІР°РґСЂР°С‚Р° СЃ РјРёРЅ РїР»РѕС‰Р°РґСЊСЋ,РіРґРµ РІСЃРµ С‚РѕС‡РєРё РІС…РѕРґСЏС‚ РІ РЅРµРіРѕ
+	int t = 0;
+	float t1 = clock();
 	for (int i = 0; i < N - 3; i++) {
 		for (int j = i + 1; j < N - 2; j++) {
 			for (int k = j + 1; k < N - 1; k++) {
@@ -262,7 +280,7 @@ int main() {
 					if (check.Init(FirstArray[i], FirstArray[j], FirstArray[k], FirstArray[t]))
 					{
 						S = check.Sq();
-						if (check.AllPointsIn(SecondArray, SecondPoints)) {
+						if (AllPointsIn(check, SecondArray, SecondPoints)) {
 							if (Smin > S) {
 								Smin = S;
 								right.Init(FirstArray[i], FirstArray[j], FirstArray[k], FirstArray[t]);
@@ -273,20 +291,21 @@ int main() {
 			}
 		}
 	}
-	//РІС‹РІРѕРґ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
+	float t2 = clock();
 	if (S == 0) {
-		cout << "РљРІР°РґСЂР°С‚Р° РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚!" << endl;
+		cout << "Квадрата не существует!" << endl;
 	}
-	else if (999999 != Smin) {
-		cout << "РўРѕС‡РєРё РІС‚РѕСЂРѕРіРѕ РјРЅРѕР¶РµСЃС‚РІР° РІС…РѕРґСЏС‚ РІ РєРІР°РґСЂР°С‚!" << endl;
-		cout << "РњРёРЅРёРјР°Р»СЊРЅР°СЏ РїР»РѕС‰Р°РґСЊ: " << Smin << endl;
-		cout << "РљРѕРѕСЂРґРёРЅР°С‚С‹ РєРІР°РґСЂР°С‚Р°: " << endl;
+	else if ( 999999 != Smin) {
+		cout << "Точки второго множества входят в квадрат!" << endl;
+		cout << "Минимальная площадь: " << Smin << endl;
+		cout << "Координаты квадрата: " << endl;
 		right.Display();
 	}
 	else {
-		cout << "РўРѕС‡РєРё РІС‚РѕСЂРѕРіРѕ РјРЅРѕР¶РµСЃС‚РІР° РЅРµ РІС…РѕРґСЏС‚ РІ РєРІР°РґСЂР°С‚!" << endl;
+		cout << "Точки второго множества не входят в квадрат!" << endl;
 	}
+	cout << "Time: " << (t2-t1)/1000 << endl;
+}
 	system("PAUSE");
 	return 0;
 }
-
